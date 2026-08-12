@@ -52,3 +52,10 @@ Thumbs.db
 
 # Docker
 .docker/
+
+# User Configs (Personal settings ignored by git)
+config/companies.yml
+config/filters.yml
+!config/companies.example.yml
+!config/filters.example.yml
+
