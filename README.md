@@ -50,11 +50,12 @@ An automated, self-hosted job board monitoring system built with Python, Playwri
              │      Scraper Engine Dispatcher (src/)        │
              └──────┬───────────────┼───────────────┬───────┘
                     │               │               │
-      ┌─────────────▼───┐   ┌───────▼──────┐   ┌────▼─────────────┐
-      │ ATS APIs (JSON) │   │ XML Sitemaps │   │ Playwright Head- │
-      │ Greenhouse/Lever│   │ Crawler      │   │ less Chromium    │
-      │ Workday/Eightfold   │              │   │ (JS Dynamic Apps)│
-      └─────────────┬───┘   └───────┬──────┘   └────┬─────────────┘
+                    ▼               ▼               ▼
+      ┌──────────────────┐   ┌──────────────┐   ┌──────────────────┐
+      │ ATS APIs (JSON)  │   │ XML Sitemaps │   │ Playwright Head- │
+      │ Greenhouse/Lever │   │   Crawler    │   │ less Chromium    │
+      │ Workday/Eightfold    │              │   │ (JS Dynamic Apps)│
+      └─────────────┬────┘   └──────┬───────┘   └───┬──────────────┘
                     │               │               │
                     └───────────────┼───────────────┘
                                     │
