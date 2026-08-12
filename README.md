@@ -1,6 +1,6 @@
 # 🎯 Job Hunter
 
-[![Python Version](https://img.shields.io/badge/python-3.11.9%2B-blue.svg)](https://www.python.org/downloads/)
+[![Python Version](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg?logo=docker)](https://www.docker.com/)
 [![Playwright](https://img.shields.io/badge/playwright-chromium-green.svg)](https://playwright.dev/)
 [![SQLite](https://img.shields.io/badge/database-SQLite-003B57.svg?logo=sqlite)](https://www.sqlite.org/)
