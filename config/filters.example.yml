@@ -1,0 +1,64 @@
+# ============================================================
+# Job Hunter — Filters Configuration (Example)
+# Copy this file to config/filters.yml and customize.
+# ============================================================
+
+# --- Keyword Filters ---
+# A job is INTERESTING if:
+#   - It matches at least ONE include_keyword
+#   - AND it does NOT match any exclude_keyword
+#
+# Matching is case-insensitive and normalized.
+# Matching checks: title, description, location fields.
+# ============================================================
+
+include_keywords:
+  # Hardware / Embedded Systems example
+  - hardware engineer
+  - hardware design
+  - embedded systems
+  - embedded software
+  - firmware developer
+  - pcb design
+  - fpga design
+
+exclude_keywords:
+  # Web / App / Non-technical roles to filter out
+  - frontend developer
+  - backend developer
+  - web developer
+  - sales manager
+  - marketing manager
+  - account manager
+
+# --- Geographic Filter ---
+# List of allowed countries. Empty list [] = accept all countries.
+allowed_countries:
+  - Italy
+  - Germany
+  - Netherlands
+  - France
+  - Switzerland
+  - United Kingdom
+  - Spain
+  - Austria
+
+# --- Scraping Settings ---
+scraping:
+  # Delay between scraping each company (in seconds)
+  delay_between_companies_seconds: 3.0
+
+  # Page load timeout for Playwright (in seconds)
+  page_timeout_seconds: 60
+
+  # Max number of jobs to process per company per scan (0 = unlimited)
+  max_jobs_per_company: 200
+
+# --- Telegram Settings ---
+telegram:
+  # Maximum jobs per single Telegram message
+  max_jobs_per_message: 10
+
+# --- Update Settings ---
+# If true and a job's description changes, re-send a Telegram notification
+notify_on_update: false

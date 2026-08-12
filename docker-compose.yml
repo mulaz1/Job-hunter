@@ -1,0 +1,33 @@
+services:
+  job-hunter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: job-hunter
+    restart: unless-stopped
+
+    # Mount data and config as read-write (allows Telegram /add command to update companies.yml)
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config
+
+    # Load environment variables from .env file
+    env_file:
+      - .env
+
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+    # Resource limits (adjust for your VM)
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1.0"
+        reservations:
+          memory: 256M
+          cpus: "0.25"

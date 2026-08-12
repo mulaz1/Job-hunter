@@ -1,0 +1,62 @@
+# ============================================================
+# Job Hunter — Target Companies Configuration (Example)
+# Copy this file to config/companies.yml and customize.
+# ============================================================
+
+companies:
+  # Example 1: Generic scraper (Playwright DOM extraction)
+  - name: "Example Corporation"
+    country: "Germany"
+    careers_url: "https://careers.example.com/jobs"
+    scraper: generic
+
+  # Example 2: Greenhouse ATS API
+  - name: "Example Tech Greenhouse"
+    country: "Netherlands"
+    careers_url: "https://boards.greenhouse.io/exampletech"
+    scraper: greenhouse
+    company_id: "exampletech"
+
+  # Example 3: Workday ATS API
+  - name: "Example Workday Enterprise"
+    country: "Italy"
+    careers_url: "https://example.wd3.myworkdayjobs.com/External_Career_Site"
+    scraper: workday
+    company_id: "example"
+    workday_tenant: "example"
+    workday_instance: "wd3"
+
+  # Example 4: Lever ATS API
+  - name: "Example Lever StartUp"
+    country: "France"
+    careers_url: "https://jobs.lever.co/example"
+    scraper: lever
+    company_id: "example"
+
+  # Example 5: Eightfold AI ATS API
+  - name: "Example Eightfold Tech"
+    country: "Switzerland"
+    careers_url: "https://example.eightfold.ai/careers"
+    scraper: eightfold
+    company_id: "example"
+    eightfold_domain: "example.com"
+
+  # Example 6: Workable ATS API
+  - name: "Example Workable Startup"
+    country: "Belgium"
+    careers_url: "https://apply.workable.com/example/"
+    scraper: workable
+    company_id: "example"
+
+  # Example 7: SmartRecruiters ATS API
+  - name: "Example SmartRecruiters"
+    country: "United Kingdom"
+    careers_url: "https://jobs.smartrecruiters.com/example"
+    scraper: smartrecruiters
+    company_id: "example"
+
+  # Example 8: XML Sitemap Crawler
+  - name: "Example Sitemap Company"
+    country: "Austria"
+    careers_url: "https://www.example.com/sitemap.xml"
+    scraper: sitemap

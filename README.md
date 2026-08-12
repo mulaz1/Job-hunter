@@ -134,16 +134,21 @@ LOG_LEVEL=INFO
 
 ### 3. Configure Target Companies
 
-Edit `config/companies.yml` to specify the companies and ATS scrapers you wish to monitor:
+Copy the example companies template and edit `config/companies.yml` to specify the companies and ATS scrapers you wish to monitor:
+
+```bash
+cp config/companies.example.yml config/companies.yml
+```
+
+Example configuration (`config/companies.yml`):
 
 ```yaml
 companies:
-  - name: STMicroelectronics
+  - name: Example Tech
     country: Italy
-    careers_url: https://stmicroelectronics.eightfold.ai/careers
+    careers_url: https://example.eightfold.ai/careers
     scraper: eightfold
-    company_id: stmicroelectronics
-    eightfold_domain: stmicroelectronics.com
+    company_id: exampletech
 
   - name: NXP Semiconductors
     country: Netherlands
@@ -157,16 +162,17 @@ companies:
     careers_url: https://job-boards.eu.greenhouse.io/exeinspa
     scraper: greenhouse
     company_id: exeinspa
-
-  - name: ASML
-    country: Netherlands
-    careers_url: https://www.asml.com/en/careers/find-your-job
-    scraper: generic
 ```
 
 ### 4. Configure Search Filters
 
-Edit `config/filters.yml` to specify desired keywords and allowed locations:
+Copy the example filters template and edit `config/filters.yml` to specify desired keywords and allowed locations:
+
+```bash
+cp config/filters.example.yml config/filters.yml
+```
+
+Example configuration (`config/filters.yml`):
 
 ```yaml
 include_keywords:
@@ -180,7 +186,6 @@ exclude_keywords:
   - frontend developer
   - web developer
   - sales manager
-  - backend engineer
 
 allowed_countries:
   - Italy
@@ -189,6 +194,7 @@ allowed_countries:
   - France
   - Switzerland
 ```
+
 
 ### 5. Build and Launch Container
 
@@ -233,8 +239,10 @@ job-hunter/
 ├── requirements.txt        # Dependencies (Playwright, httpx, APScheduler, PyYAML)
 ├── .env.example            # Environment variables template
 ├── config/
-│   ├── companies.yml       # List of target companies & scraper settings
-│   └── filters.yml         # Keyword & location filtering rules
+│   ├── companies.example.yml # Template for target companies config
+│   ├── filters.example.yml   # Template for keyword & location filter rules
+│   ├── companies.yml         # User target companies (ignored by Git)
+│   └── filters.yml           # User search filters (ignored by Git)
 ├── data/
 │   └── jobs.db             # Persistent SQLite database (auto-created)
 ├── src/
@@ -389,8 +397,9 @@ from src.scrapers.my_platform import MyPlatformScraper
 ## 🛡️ Security & Privacy
 
 - **No Third-Party Analytics**: Job Hunter sends data **only** to the official Telegram Bot API endpoint (`https://api.telegram.org`).
-- **Secrets Protection**: `.env` and SQLite database files (`data/*.db`) are ignored by Git.
+- **Secrets & Configuration Protection**: `.env`, custom configuration files (`config/companies.yml`, `config/filters.yml`), and SQLite database files (`data/*.db`) are explicitly ignored by Git (`.gitignore`).
 - **Least Privilege**: The Docker container executes under a non-root system user (`appuser`).
+
 
 ---
 
