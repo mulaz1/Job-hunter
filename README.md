@@ -42,12 +42,12 @@ An automated, self-hosted job board monitoring system built with Python, Playwri
 
 ```
              ┌──────────────────────────────────────────────┐
-             │       APScheduler (Runs every N hours)        │
+             │       APScheduler (Runs every N hours)       │
              └──────────────────────┬───────────────────────┘
                                     │
                                     ▼
              ┌──────────────────────────────────────────────┐
-             │      Scraper Engine Dispatcher (src/)       │
+             │      Scraper Engine Dispatcher (src/)        │
              └──────┬───────────────┼───────────────┬───────┘
                     │               │               │
       ┌─────────────▼───┐   ┌───────▼──────┐   ┌────▼─────────────┐
@@ -66,7 +66,7 @@ An automated, self-hosted job board monitoring system built with Python, Playwri
                                     │ New jobs only
                                     ▼
              ┌──────────────────────────────────────────────┐
-             │     Filter Engine (src/filters.py)          │
+             │     Filter Engine (src/filters.py)           │
              │   (Keyword Include/Exclude & Geo Check)      │
              └──────────────────────┬───────────────────────┘
                                     │ Matched jobs
