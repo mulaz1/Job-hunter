@@ -1,6 +1,6 @@
 # 🎯 Job Hunter
 
-[![Python Version](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
+[![Python Version](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg?logo=docker)](https://www.docker.com/)
 [![Playwright](https://img.shields.io/badge/playwright-chromium-green.svg)](https://playwright.dev/)
 [![SQLite](https://img.shields.io/badge/database-SQLite-003B57.svg?logo=sqlite)](https://www.sqlite.org/)
@@ -42,19 +42,20 @@ An automated, self-hosted job board monitoring system built with Python, Playwri
 
 ```
              ┌──────────────────────────────────────────────┐
-             │       APScheduler (Runs every N hours)        │
+             │       APScheduler (Runs every N hours)       │
              └──────────────────────┬───────────────────────┘
                                     │
                                     ▼
              ┌──────────────────────────────────────────────┐
-             │      Scraper Engine Dispatcher (src/)       │
+             │      Scraper Engine Dispatcher (src/)        │
              └──────┬───────────────┼───────────────┬───────┘
                     │               │               │
-      ┌─────────────▼───┐   ┌───────▼──────┐   ┌────▼─────────────┐
-      │ ATS APIs (JSON) │   │ XML Sitemaps │   │ Playwright Head- │
-      │ Greenhouse/Lever│   │ Crawler      │   │ less Chromium    │
-      │ Workday/Eightfold   │              │   │ (JS Dynamic Apps)│
-      └─────────────┬───┘   └───────┬──────┘   └────┬─────────────┘
+                    ▼               ▼               ▼
+      ┌──────────────────┐   ┌──────────────┐   ┌──────────────────┐
+      │ ATS APIs (JSON)  │   │ XML Sitemaps │   │ Playwright Head- │
+      │ Greenhouse/Lever │   │   Crawler    │   │ less Chromium    │
+      │ Workday/Eightfold    │              │   │ (JS Dynamic Apps)│
+      └─────────────┬────┘   └──────┬───────┘   └───┬──────────────┘
                     │               │               │
                     └───────────────┼───────────────┘
                                     │
@@ -66,7 +67,7 @@ An automated, self-hosted job board monitoring system built with Python, Playwri
                                     │ New jobs only
                                     ▼
              ┌──────────────────────────────────────────────┐
-             │     Filter Engine (src/filters.py)          │
+             │     Filter Engine (src/filters.py)           │
              │   (Keyword Include/Exclude & Geo Check)      │
              └──────────────────────┬───────────────────────┘
                                     │ Matched jobs
