@@ -97,6 +97,23 @@ def _parse_lever_job(raw: dict[str, Any], company: CompanyConfig) -> Job:
     )
 
 
+def _extract_company_id_from_url(url: str) -> Optional[str]:
+    """
+    Extract Lever company ID from a careers URL.
+    Example: "https://jobs.lever.co/acme" -> "acme"
+    """
+    try:
+        from urllib.parse import urlparse
+        parsed = urlparse(url)
+        if "lever.co" in (parsed.hostname or ""):
+            parts = [p for p in parsed.path.split("/") if p]
+            if parts:
+                return parts[0]
+    except Exception:
+        pass
+    return None
+
+
 def _strip_html(html: str) -> str:
     """Remove HTML tags from a string."""
     if not html:
@@ -126,20 +143,21 @@ class LeverScraper(BaseScraper):
         Fetch all jobs from the Lever API for this company.
 
         Args:
-            company: Company configuration. Must have `company_id` set.
+            company: Company configuration.
 
         Returns:
             List of Job objects.
         """
-        if not company.company_id:
+        company_id = company.company_id or _extract_company_id_from_url(company.careers_url)
+        if not company_id:
             logger.error(
-                "LeverScraper: company_id not set for %s. "
+                "LeverScraper: cannot determine company_id for %s. "
                 "Please add company_id to companies.yml.",
                 company.name,
             )
             return []
 
-        url = f"{LEVER_API_BASE}/{company.company_id}?mode=json"
+        url = f"{LEVER_API_BASE}/{company_id}?mode=json"
         logger.debug("LeverScraper: fetching %s", url)
 
         try:
@@ -154,7 +172,7 @@ class LeverScraper(BaseScraper):
                 logger.error(
                     "LeverScraper: company '%s' not found for %s. "
                     "Check the company_id in companies.yml.",
-                    company.company_id,
+                    company_id,
                     company.name,
                 )
                 return []

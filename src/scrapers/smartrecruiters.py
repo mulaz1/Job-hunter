@@ -16,7 +16,8 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional
+from urllib.parse import urlparse
 
 import httpx
 
@@ -29,6 +30,25 @@ logger = logging.getLogger(__name__)
 SMARTRECRUITERS_API_BASE = "https://api.smartrecruiters.com/v1/companies"
 REQUEST_TIMEOUT = 30
 PAGE_SIZE = 100  # SmartRecruiters max page size
+
+
+def _extract_company_id_from_url(url: str) -> Optional[str]:
+    """
+    Extract SmartRecruiters company ID from a careers URL.
+
+    Examples:
+      "https://careers.smartrecruiters.com/VestasWindSystemsAS" -> "VestasWindSystemsAS"
+      "https://jobs.smartrecruiters.com/VestasWindSystemsAS" -> "VestasWindSystemsAS"
+    """
+    try:
+        parsed = urlparse(url)
+        if "smartrecruiters.com" in (parsed.hostname or ""):
+            parts = [p for p in parsed.path.split("/") if p]
+            if parts:
+                return parts[0]
+    except Exception:
+        pass
+    return None
 
 
 def _parse_sr_job(raw: dict[str, Any], company: CompanyConfig) -> Job:
@@ -141,15 +161,16 @@ class SmartRecruitersScraper(BaseScraper):
         Returns:
             List of Job objects.
         """
-        if not company.company_id:
+        company_id = company.company_id or _extract_company_id_from_url(company.careers_url)
+        if not company_id:
             logger.error(
-                "SmartRecruitersScraper: company_id not set for %s. "
+                "SmartRecruitersScraper: cannot determine company_id for %s. "
                 "Please add company_id to companies.yml.",
                 company.name,
             )
             return []
 
-        base_url = f"{SMARTRECRUITERS_API_BASE}/{company.company_id}/postings"
+        base_url = f"{SMARTRECRUITERS_API_BASE}/{company_id}/postings"
         all_jobs: list[Job] = []
         offset = 0
 

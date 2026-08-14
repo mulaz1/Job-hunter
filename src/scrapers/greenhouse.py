@@ -14,7 +14,8 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional
+from urllib.parse import parse_qs, urlparse
 
 import httpx
 
@@ -26,6 +27,33 @@ logger = logging.getLogger(__name__)
 
 GREENHOUSE_API_BASE = "https://boards-api.greenhouse.io/v1/boards"
 REQUEST_TIMEOUT = 30
+
+
+def _extract_board_token_from_url(url: str) -> Optional[str]:
+    """
+    Extract the Greenhouse board token from a careers URL.
+
+    Examples:
+      "https://job-boards.eu.greenhouse.io/exeinspa" -> "exeinspa"
+      "https://boards.greenhouse.io/acme" -> "acme"
+      "https://boards.greenhouse.io/embed/job_board?for=acme" -> "acme"
+    """
+    try:
+        parsed = urlparse(url)
+        hostname = parsed.hostname or ""
+        if "greenhouse.io" in hostname:
+            query = parse_qs(parsed.query)
+            if "for" in query and query["for"]:
+                return query["for"][0]
+            parts = [p for p in parsed.path.split("/") if p]
+            if parts:
+                if parts[0] == "embed" and len(parts) > 1 and parts[1] != "job_board":
+                    return parts[1]
+                if parts[0] not in ("embed", "v1"):
+                    return parts[0]
+    except Exception:
+        pass
+    return None
 
 
 def _parse_greenhouse_job(raw: dict[str, Any], company: CompanyConfig) -> Job:
@@ -109,15 +137,16 @@ class GreenhouseScraper(BaseScraper):
         Returns:
             List of Job objects.
         """
-        if not company.company_id:
+        board_token = company.company_id or _extract_board_token_from_url(company.careers_url)
+        if not board_token:
             logger.error(
-                "GreenhouseScraper: company_id not set for %s. "
+                "GreenhouseScraper: cannot determine board token for %s. "
                 "Please add company_id to companies.yml.",
                 company.name,
             )
             return []
 
-        url = f"{GREENHOUSE_API_BASE}/{company.company_id}/jobs?content=true"
+        url = f"{GREENHOUSE_API_BASE}/{board_token}/jobs?content=true"
         logger.debug("GreenhouseScraper: fetching %s", url)
 
         try:
@@ -132,7 +161,7 @@ class GreenhouseScraper(BaseScraper):
                 logger.error(
                     "GreenhouseScraper: board token '%s' not found for %s. "
                     "Check the company_id in companies.yml.",
-                    company.company_id,
+                    board_token,
                     company.name,
                 )
                 return []

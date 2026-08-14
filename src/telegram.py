@@ -320,6 +320,41 @@ class TelegramNotifier:
                 "careers_url": url,
                 "scraper": scraper
             }
+
+            if scraper == "greenhouse":
+                from src.scrapers.greenhouse import _extract_board_token_from_url
+                cid = _extract_board_token_from_url(url)
+                if cid:
+                    new_company["company_id"] = cid
+            elif scraper == "lever":
+                from src.scrapers.lever import _extract_company_id_from_url
+                cid = _extract_company_id_from_url(url)
+                if cid:
+                    new_company["company_id"] = cid
+            elif scraper == "smartrecruiters":
+                from src.scrapers.smartrecruiters import _extract_company_id_from_url
+                cid = _extract_company_id_from_url(url)
+                if cid:
+                    new_company["company_id"] = cid
+            elif scraper == "workable":
+                from src.scrapers.workable import _extract_tenant_from_url
+                cid = _extract_tenant_from_url(url)
+                if cid:
+                    new_company["company_id"] = cid
+            elif scraper == "eightfold":
+                from src.scrapers.eightfold import _extract_tenant_from_url
+                cid = _extract_tenant_from_url(url)
+                if cid:
+                    new_company["company_id"] = cid
+                    new_company["eightfold_domain"] = f"{cid}.com"
+            elif scraper == "workday":
+                from src.scrapers.workday import _extract_tenant_from_url
+                tenant, instance = _extract_tenant_from_url(url)
+                if tenant and instance:
+                    new_company["company_id"] = tenant
+                    new_company["workday_tenant"] = tenant
+                    new_company["workday_instance"] = instance
+
             companies.append(new_company)
             content["companies"] = companies
             

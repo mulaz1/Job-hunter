@@ -314,19 +314,25 @@ class GenericScraper(BaseScraper):
                         "--disable-dev-shm-usage",
                         "--disable-gpu",
                         "--disable-setuid-sandbox",
+                        "--disable-blink-features=AutomationControlled",
                     ],
                 )
                 context = browser.new_context(
                     user_agent=(
-                        "Mozilla/5.0 (X11; Linux x86_64) "
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                         "AppleWebKit/537.36 (KHTML, like Gecko) "
-                        "Chrome/120.0.0.0 Safari/537.36"
+                        "Chrome/124.0.0.0 Safari/537.36"
                     ),
-                    viewport={"width": 1280, "height": 720},
+                    viewport={"width": 1920, "height": 1080},
+                    locale="en-US",
                 )
 
                 page = context.new_page()
                 page.set_default_timeout(timeout_ms)
+                try:
+                    page.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+                except Exception:
+                    pass
 
                 try:
                     response = page.goto(url, wait_until="domcontentloaded", timeout=timeout_ms)

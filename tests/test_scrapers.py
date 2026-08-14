@@ -25,9 +25,21 @@ from src.scrapers.generic import (
     _is_likely_job_text,
     _extract_jobs_from_html,
 )
-from src.scrapers.greenhouse import GreenhouseScraper, _parse_greenhouse_job
-from src.scrapers.lever import LeverScraper, _parse_lever_job
-from src.scrapers.smartrecruiters import SmartRecruitersScraper, _parse_sr_job
+from src.scrapers.greenhouse import (
+    GreenhouseScraper,
+    _parse_greenhouse_job,
+    _extract_board_token_from_url,
+)
+from src.scrapers.lever import (
+    LeverScraper,
+    _parse_lever_job,
+    _extract_company_id_from_url as _extract_lever_id,
+)
+from src.scrapers.smartrecruiters import (
+    SmartRecruitersScraper,
+    _parse_sr_job,
+    _extract_company_id_from_url as _extract_sr_id,
+)
 from src.scrapers.registry import get_scraper, list_scrapers
 
 
@@ -305,11 +317,17 @@ class TestGreenhouseScraper:
         assert "hardware" in job.description.lower()
         assert job.published_at is not None
 
-    def test_no_company_id_returns_empty(self, scraping_config):
+    def test_extract_board_token_from_url(self):
+        assert _extract_board_token_from_url("https://job-boards.eu.greenhouse.io/exeinspa") == "exeinspa"
+        assert _extract_board_token_from_url("https://boards.greenhouse.io/acme") == "acme"
+        assert _extract_board_token_from_url("https://boards.greenhouse.io/embed/job_board?for=acme") == "acme"
+        assert _extract_board_token_from_url("https://invalid.com") is None
+
+    def test_no_company_id_returns_empty_when_url_unparseable(self, scraping_config):
         scraper = GreenhouseScraper(scraping_config)
         company = CompanyConfig(
             name="NoCo", country="Italy",
-            careers_url="https://boards.greenhouse.io/noco",
+            careers_url="https://invalid.com",
             scraper="greenhouse",
             company_id=None,  # Missing!
         )
@@ -400,11 +418,15 @@ class TestLeverScraper:
         assert job.external_id == "abc-123"
         assert job.published_at is not None
 
-    def test_no_company_id_returns_empty(self, scraping_config):
+    def test_extract_company_id_from_url(self):
+        assert _extract_lever_id("https://jobs.lever.co/leverco") == "leverco"
+        assert _extract_lever_id("https://invalid.com") is None
+
+    def test_no_company_id_returns_empty_when_url_unparseable(self, scraping_config):
         scraper = LeverScraper(scraping_config)
         company = CompanyConfig(
             name="NoCo", country="Germany",
-            careers_url="https://jobs.lever.co/noco",
+            careers_url="https://invalid.com",
             scraper="lever", company_id=None
         )
         jobs = scraper.fetch_jobs(company)
@@ -486,11 +508,15 @@ class TestSmartRecruitersScraper:
         job = _parse_sr_job(raw, company)
         assert "Remote" in job.location
 
-    def test_no_company_id_returns_empty(self, scraping_config):
+    def test_extract_company_id_from_url(self):
+        assert _extract_sr_id("https://careers.smartrecruiters.com/SRCo") == "SRCo"
+        assert _extract_sr_id("https://invalid.com") is None
+
+    def test_no_company_id_returns_empty_when_url_unparseable(self, scraping_config):
         scraper = SmartRecruitersScraper(scraping_config)
         company = CompanyConfig(
             name="NoCo", country="Denmark",
-            careers_url="https://careers.smartrecruiters.com/NoCo",
+            careers_url="https://invalid.com",
             scraper="smartrecruiters", company_id=None
         )
         jobs = scraper.fetch_jobs(company)
@@ -920,4 +946,29 @@ class TestSitemapScraper:
         from src.scrapers.sitemap import SitemapScraper
         from src.scrapers.registry import get_scraper
         assert get_scraper("sitemap") is SitemapScraper
+
+
+class TestTelegramAddCommand:
+    def test_handle_add_command_populates_company_id(self, tmp_path):
+        from unittest.mock import patch
+        import yaml
+        from src.telegram import TelegramNotifier, TelegramConfig
+        
+        config = TelegramConfig(bot_token="fake:token", chat_id="12345")
+        notifier = TelegramNotifier(config)
+        
+        test_yaml = tmp_path / "companies.yml"
+        test_yaml.write_text("companies: []\n", encoding="utf-8")
+        
+        with patch("src.telegram.Path", return_value=test_yaml), \
+             patch.object(notifier, "send_message"):
+            notifier._handle_add_command("/add Exein https://job-boards.eu.greenhouse.io/exeinspa")
+            
+        content = yaml.safe_load(test_yaml.read_text(encoding="utf-8"))
+        companies = content.get("companies", [])
+        assert len(companies) == 1
+        assert companies[0]["name"] == "Exein"
+        assert companies[0]["scraper"] == "greenhouse"
+        assert companies[0]["company_id"] == "exeinspa"
+
 
